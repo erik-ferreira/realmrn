@@ -1,11 +1,9 @@
 import Realm, { PropertySchema } from "realm"
+import { createRealmContext } from "@realm/react"
 
-import { contact } from "./schemas/contact"
+import { Contact } from "./schemas/contact"
 
-export async function getREalmInstance() {
-  const realm = await Realm.open({
-    schema: [contact],
+export const { RealmProvider, useRealm, useQuery, useObject } =
+  createRealmContext({
+    schema: [Contact],
   })
-
-  return realm
-}
