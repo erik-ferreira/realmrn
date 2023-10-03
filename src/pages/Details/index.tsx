@@ -1,26 +1,41 @@
 import { useState } from "react"
 import { View, Text, Alert } from "react-native"
 
-import { useRealm } from "../../database"
+import { useRealm, useObject } from "../../database"
 import { Contact } from "../../database/schemas/contact"
 
 import { Input } from "../../components/Input"
 import { Button } from "../../components/Button"
 
 import { styles } from "./styles"
+import { useRoute } from "@react-navigation/native"
 
-interface DetailsProps {}
+interface RouteParamsProps {
+  id: string
+}
 
-export function Details({ ...rest }: DetailsProps) {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-
+export function Details() {
   const realm = useRealm()
+  const route = useRoute()
+  const { id } = route.params as RouteParamsProps
+
+  const contact = id ? useObject(Contact, id) : undefined
+
+  const [name, setName] = useState(contact?.name || "")
+  const [email, setEmail] = useState(contact?.email || "")
 
   async function handleSave() {
-    realm.write(() => {
-      realm.create("contact", Contact.generate({ name, email }))
-    })
+    if (id && contact) {
+      realm.write(() => {
+        contact.name = name
+        contact.email = email
+        contact.updated_at = new Date()
+      })
+    } else {
+      realm.write(() => {
+        realm.create("contact", Contact.generate({ name, email }))
+      })
+    }
 
     Alert.alert("Salvo com sucesso")
   }

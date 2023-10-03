@@ -20,7 +20,11 @@ export function Home({ ...rest }: HomeProps) {
   const [contacts, setContacts] = useState<DataProps[]>([])
 
   function handleNew() {
-    navigate("details")
+    navigate("details", { id: undefined })
+  }
+
+  function handleOpenContact(id: string) {
+    navigate("details", { id })
   }
 
   async function fetchContacts() {
@@ -46,7 +50,9 @@ export function Home({ ...rest }: HomeProps) {
       <FlatList
         data={contacts}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Card data={item} />}
+        renderItem={({ item }) => (
+          <Card data={item} onPress={() => handleOpenContact(item.id)} />
+        )}
       />
 
       <Button title="Novo" onPress={handleNew} />
